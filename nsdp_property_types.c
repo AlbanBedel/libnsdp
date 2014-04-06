@@ -17,6 +17,32 @@
     .from_text = nsdp_write_##name##_property,                          \
   }
 
+#define NSDP_RO_PROPERTY_TYPE(name)                                     \
+  nsdp_property_type_t nsdp_property_type_##name =                      \
+  {                                                                     \
+    .to_text = nsdp_read_##name##_property,                             \
+    .from_text = nsdp_no_write_property,                                \
+  }
+
+#define NSDP_WO_PROPERTY_TYPE(name)                                     \
+  nsdp_property_type_t nsdp_property_type_##name =                      \
+  {                                                                     \
+    .to_text = nsdp_no_read_property,                                   \
+    .from_text = nsdp_write_##name##_property,                          \
+  }
+
+static int nsdp_no_write_property(const char* txt, void *data,
+                                   unsigned data_size)
+{
+  return -EINVAL;
+}
+
+static int nsdp_no_read_property(const void *data, unsigned data_size,
+                                 char* txt, unsigned txt_size)
+{
+  return -EINVAL;
+}
+
 static int nsdp_write_str_property(const char* txt, void *data,
                                    unsigned data_size)
 {
