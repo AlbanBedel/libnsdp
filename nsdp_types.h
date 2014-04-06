@@ -25,4 +25,16 @@ static inline uint16_t nsdp_get_u16be(const void *buf)
           (((uint16_t)(((uint8_t*)buf)[0])) << 8));
 }
 
+static inline uint32_t nsdp_get_u32be(const void *buf)
+{
+  return (((uint32_t)nsdp_get_u16be((uint8_t*)buf + 2) << 0) |
+          ((uint32_t)nsdp_get_u16be(buf) << 16));
+}
+
+static inline uint64_t nsdp_get_u64be(const void *buf)
+{
+  return (((uint64_t)nsdp_get_u32be((uint8_t*)buf + 4) << 0) |
+          ((uint64_t)nsdp_get_u32be(buf) << 32));
+}
+
 #endif /* NSDP_TYPES_H */
