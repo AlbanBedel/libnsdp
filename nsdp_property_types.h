@@ -12,5 +12,6 @@ extern nsdp_property_type_t nsdp_property_type_u8;
 extern nsdp_property_type_t nsdp_property_type_ip4;
 extern nsdp_property_type_t nsdp_property_type_mac;
 extern nsdp_property_type_t nsdp_property_type_port_status;
+extern nsdp_property_type_t nsdp_property_type_port_statistics;
 
 #endif /* NSDP_PROPERTY_TYPES_H */

@@ -238,3 +238,18 @@ static int nsdp_read_port_status_property(const void *data, unsigned data_size,
   return 3;
 }
 NSDP_PROPERTY_TYPE(port_status);
+
+static int nsdp_read_port_statistics_property(const void *data,
+                                              unsigned data_size,
+                                              char* txt, unsigned txt_size)
+{
+  const uint8_t *stat = data;
+
+  if (data_size < (1 + 6*8))
+    return -EINVAL;
+
+  snprintf(txt, txt_size, "%d:rx=%" PRId64 ",tx=%" PRId64,
+           stat[0], nsdp_get_u64be(stat+1), nsdp_get_u64be(stat+1+8));
+  return 1 + 6*8;
+}
+NSDP_RO_PROPERTY_TYPE(port_statistics);
