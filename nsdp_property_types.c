@@ -31,6 +31,11 @@
     .from_text = nsdp_write_##name##_property,                          \
   }
 
+struct nsdp_enumeration {
+  const char* name;
+  int value;
+};
+
 static int nsdp_no_write_property(const char* txt, void *data,
                                    unsigned data_size)
 {
@@ -42,6 +47,95 @@ static int nsdp_no_read_property(const void *data, unsigned data_size,
 {
   return -EINVAL;
 }
+
+static int nsdp_enum_from_text(const struct nsdp_enumeration *enu,
+                               const char* txt, int* val)
+{
+  int i;
+  char* end;
+
+  for (i = 0 ; enu && enu[i].name ; i += 1) {
+    if (!strcmp(enu[i].name, txt)) {
+      if (val)
+        *val = enu[i].value;
+      return 0;
+    }
+  }
+  i = strtol(txt, &end, 0);
+  if (val)
+    *val = i;
+  return end > txt ? 0 : -EINVAL;
+}
+
+static int nsdp_enum_to_text(const struct nsdp_enumeration *enu,
+                              int val, char* txt, unsigned txt_size)
+{
+  int i;
+  for (i = 0 ; enu && enu[i].name ; i += 1) {
+    if (enu[i].value == val)
+      return snprintf(txt, txt_size, "%s", enu[i].name);
+  }
+  return snprintf(txt, txt_size, "%d", val);
+}
+
+static int nsdp_write_u8_enum_property(const struct nsdp_enumeration *enu,
+                                       const char* txt, void *data,
+                                       unsigned data_size)
+{
+  int val, err;
+
+  if (data_size == 0)
+    return 1;
+
+  err = nsdp_enum_from_text(enu, txt, &val);
+  if (err)
+    return err;
+
+  if (val < 0 || val > 0xFF)
+    return -EINVAL;
+
+  ((uint8_t*)data)[0] = val;
+  return 1;
+}
+
+static int nsdp_read_u8_enum_property(const struct nsdp_enumeration *enu,
+                                      const void *data,
+                                      unsigned data_size,
+                                      char* txt, unsigned txt_size)
+{
+  if (data_size != 1)
+    return -E2BIG;
+
+  nsdp_enum_to_text(enu, ((uint8_t*)data)[0], txt, txt_size);
+  return 1;
+}
+
+#define NSDP_ENUM_PROPERTY_WRITER(name, data_type, enum_desc)   \
+  static int nsdp_write_##name##_property(const char* txt,      \
+                                          void *data,           \
+                                          unsigned data_size)   \
+  {                                                             \
+    return nsdp_write_##data_type##_enum_property(enum_desc,    \
+                                                  txt,          \
+                                                  data,         \
+                                                  data_size);   \
+  }
+
+#define NSDP_ENUM_PROPERTY_READER(name, data_type, enum_desc)   \
+  static int nsdp_read_##name##_property(const void *data,      \
+                                         unsigned data_size,    \
+                                         char* txt,             \
+                                         unsigned txt_size)     \
+  {                                                             \
+    return nsdp_read_##data_type##_enum_property(enum_desc,     \
+                                               data, data_size, \
+                                               txt, txt_size);  \
+  }
+
+#define NSDP_ENUM_PROPERTY_TYPE(name, data_type)                \
+  NSDP_ENUM_PROPERTY_WRITER(name, data_type, name##_enum)       \
+  NSDP_ENUM_PROPERTY_READER(name, data_type, name##_enum)       \
+  NSDP_PROPERTY_TYPE(name)
 
 static int nsdp_write_str_property(const char* txt, void *data,
                                    unsigned data_size)
@@ -73,30 +167,13 @@ NSDP_PROPERTY_TYPE(str);
 static int nsdp_write_u8_property(const char* txt, void *data,
                                   unsigned data_size)
 {
-  int val;
-
-  if (data_size == 0)
-    return 1;
-
-  val = atoi(txt);
-  if(val < 0 || val > 0xFF)
-    return -EINVAL;
-
-  ((uint8_t*)data)[0] = val;
-  return 1;
+  return nsdp_write_u8_enum_property(NULL, txt, data, data_size);
 }
 
 static int nsdp_read_u8_property(const void *data, unsigned data_size,
                                  char* txt, unsigned txt_size)
 {
-  int val;
-
-  if (data_size != 1)
-    return -E2BIG;
-
-  val = ((uint8_t*)data)[0];
-  snprintf(txt, txt_size, "%d", val);
-  return 1;
+  return nsdp_read_u8_enum_property(NULL, data, data_size, txt, txt_size);
 }
 NSDP_PROPERTY_TYPE(u8);
 
