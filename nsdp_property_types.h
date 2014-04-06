@@ -14,5 +14,6 @@ extern nsdp_property_type_t nsdp_property_type_mac;
 extern nsdp_property_type_t nsdp_property_type_port_status;
 extern nsdp_property_type_t nsdp_property_type_port_statistics;
 extern nsdp_property_type_t nsdp_property_type_vlan_engine;
+extern nsdp_property_type_t nsdp_property_type_port_pvid;
 
 #endif /* NSDP_PROPERTY_TYPES_H */

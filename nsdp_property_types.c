@@ -348,3 +348,18 @@ static const struct nsdp_enumeration vlan_engine_enum[] = {
   }
 };
 NSDP_ENUM_PROPERTY_TYPE(vlan_engine, u8);
+
+static int nsdp_read_port_pvid_property(const void *data,
+                                        unsigned data_size,
+                                        char* txt, unsigned txt_size)
+{
+  const uint8_t *stat = data;
+
+  if (data_size < 3)
+    return -EINVAL;
+
+  snprintf(txt, txt_size, "%d:%" PRId16,
+           stat[0], nsdp_get_u16be(stat+1));
+  return 3;
+}
+NSDP_RO_PROPERTY_TYPE(port_pvid);
