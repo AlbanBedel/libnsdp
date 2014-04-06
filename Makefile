@@ -42,16 +42,16 @@ endef
 $(foreach dep,$(all_DEPS),$(eval $(call goal,$(dep))))
 
 %.o: %.c Makefile
-	$(CC) -o $@ -c $< $(CPPFLAGS) $(CFLAGS)
+	$(CROSS_COMPILE)$(CC) -o $@ -c $< $(CPPFLAGS) $(CFLAGS)
 
 %.so:
-	$(CC) -o $@ -shared $(filter %.o,$($*.so_DEPS)) $(LDFLAGS) $(LIBS)
+	$(CROSS_COMPILE)$(CC) -o $@ -shared $(filter %.o,$($*.so_DEPS)) $(LDFLAGS) $(LIBS)
 
 %.a:
 	rm -f $@
-	$(AR) rs $@ $(filter %.o,$($*.a_DEPS))
+	$(CROSS_COMPILE)$(AR) rs $@ $(filter %.o,$($*.a_DEPS))
 
 %:
-	$(CC) -o $@ $(filter %.o,$($*_DEPS)) $(LDFLAGS) $(LIBS)
+	$(CROSS_COMPILE)$(CC) -o $@ $(filter %.o,$($*_DEPS)) $(LDFLAGS) $(LIBS)
 
 .PHONY: all clean
