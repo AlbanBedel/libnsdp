@@ -330,3 +330,21 @@ static int nsdp_read_port_statistics_property(const void *data,
   return 1 + 6*8;
 }
 NSDP_RO_PROPERTY_TYPE(port_statistics);
+
+static const struct nsdp_enumeration vlan_engine_enum[] = {
+  {
+    .value = 1,
+    .name  = "VLAN Port Based",
+  },{
+    .value = 2,
+    .name  = "VLAN ID Based",
+  },{
+    .value = 3,
+    .name  = "802.1Q Port Based",
+  },{
+    .value = 4,
+    .name  = "802.1Q Extended",
+  },{
+  }
+};
+NSDP_ENUM_PROPERTY_TYPE(vlan_engine, u8);
