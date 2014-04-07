@@ -31,6 +31,7 @@ static const struct nsdp_property_desc nsdp_property_desc[] = {
                      "Port Statistics", port_statistics),
   NSDP_PROPERTY_DESC(PORT_COUNT, "port-count", "Port Count", u8),
   NSDP_PROPERTY_DESC(VLAN_ENGINE, "vlan-engine", "VLAN Engine", vlan_engine),
+  NSDP_PROPERTY_DESC(PORT_PVID, "vlan-members", "VLAN Members", vlan_members),
   NSDP_PROPERTY_DESC(PORT_PVID, "port-pvid", "Port PVID", port_pvid),
 };
 

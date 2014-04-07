@@ -363,3 +363,26 @@ static int nsdp_read_port_pvid_property(const void *data,
   return 3;
 }
 NSDP_RO_PROPERTY_TYPE(port_pvid);
+
+static int nsdp_read_vlan_members_property(const void *data,
+                                           unsigned data_size,
+                                           char* txt, unsigned txt_size)
+{
+  const uint8_t *stat = data;
+  char desc[9];
+  int i, desc_pos = 0;
+
+  if (data_size < 3)
+    return -EINVAL;
+
+  for (i = 0 ; i < 8 ; i += 1) {
+    if (stat[2] & (0x80 >> i))
+      desc[desc_pos++] = (char)i+'1';
+  }
+  desc[desc_pos++] = 0;
+
+  snprintf(txt, txt_size, "%" PRId16 ":%s",
+           nsdp_get_u16be(stat), desc);
+  return 4;
+}
+NSDP_RO_PROPERTY_TYPE(vlan_members);
